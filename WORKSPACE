@@ -147,12 +147,21 @@ load("@rules_python//python:pip.bzl", "pip_parse")
 pip_parse(
     name = "au_pip_deps",
     python_interpreter_target = interpreter,
-    requirements_lock = "@//:requirements_lock.txt",
+    requirements_lock = "@//tools/docs:requirements_lock.txt",
 )
 
 load("@au_pip_deps//:requirements.bzl", "install_deps")
 
 install_deps()
+
+http_archive(
+    name = "rules_license",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_license/releases/download/1.0.0/rules_license-1.0.0.tar.gz",
+        "https://github.com/bazelbuild/rules_license/releases/download/1.0.0/rules_license-1.0.0.tar.gz",
+    ],
+    sha256 = "26d4021f6898e23b82ef953078389dd49ac2b5618ac564ade4ef87cced147b38",
+)
 
 ################################################################################
 # SECTION: Install buildifier.

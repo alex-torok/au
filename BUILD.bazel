@@ -12,51 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@au_pip_deps//:requirements.bzl", "requirement")
 load("@rules_cc//cc:defs.bzl", "cc_library")
-load("@rules_python//python:defs.bzl", "py_binary")
-load("@rules_python//python:pip.bzl", "compile_pip_requirements")
+load("@rules_license//rules:license.bzl", "license")
 
-# This rule adds a convenient way to update the requirements file.
-compile_pip_requirements(
-    name = "requirements",
-    requirements_in = "requirements.in",
-    requirements_txt = "requirements_lock.txt",
+exports_files(["mkdocs.yml"])
+
+license(
+    name = "license",
+    license_text = "LICENSE.txt",
+    license_kind = "@rules_license//licenses/spdx:Apache-2.0"
 )
 
-py_binary(
-    name = "update_docs",
-    srcs = ["update_docs.py"],
-    data = [
-        "mkdocs.yml",
+filegroup(
+    name = "all_docs",
+    srcs = glob(["docs/**"]),
+    visibility = ["//tools/docs:__pkg__"],
+)
+
+filegroup(
+    name = "all_headers",
+    srcs = [
         ":au_all_units_hh",
         ":au_all_units_noio_hh",
         ":au_hh",
         ":au_noio_hh",
-    ] + glob(["docs/**"]),
-    deps = [
-        requirement("mkdocs"),
-        requirement("mkdocs-material"),
     ],
-)
-
-py_binary(
-    name = "mike",
-    srcs = ["mike_bin.py"],
-    data = [
-        "mkdocs.yml",
-        ":au_all_units_hh",
-        ":au_all_units_noio_hh",
-        ":au_hh",
-        ":au_noio_hh",
-    ] + glob(["docs/**"]),
-    main = "mike_bin.py",
-    deps = [
-        ":update_docs",
-        requirement("mike"),
-        requirement("mkdocs"),
-        requirement("mkdocs-material"),
-    ],
+    visibility = ["//tools/docs:__pkg__"],
 )
 
 BASE_UNITS = [
